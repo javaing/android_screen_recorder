@@ -7,30 +7,27 @@ import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
-import android.os.Environment
-import android.util.Log
 import android.widget.Toast
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 class Tools {
     companion object {
+        val solarDatePattern = "yyyy/MM/dd HH:mm"
+
         lateinit var manager: MediaProjectionManager
-        lateinit var filename :String
         lateinit var mMediaRecorder: MediaRecorder
         lateinit var projection: MediaProjection
         lateinit var virtualDisplay: VirtualDisplay
 
 
-
-        fun startRecord(ctx:Context, resultCode: Int, data: Intent) {
+        fun startRecord(ctx:Context, resultCode: Int, data: Intent, filename: String) {
             mMediaRecorder = MediaRecorder()
-            filename = ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path +"/mobile01.mp4"
             manager = ctx.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
 
-            Log.e("TEST", "1")
             projection = manager?.getMediaProjection(resultCode, data)
-            Log.e("TEST", "2")
-            setUpMediaRecorder(ctx)
+            setUpMediaRecorder(ctx, filename)
             val metrics = ctx.getResources().getDisplayMetrics()
             virtualDisplay = projection.createVirtualDisplay("ScreenRecording",
                 metrics.widthPixels, metrics.heightPixels, metrics.densityDpi, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
@@ -39,7 +36,7 @@ class Tools {
             mMediaRecorder.start()
         }
 
-        private fun setUpMediaRecorder(ctx: Context) {
+        private fun setUpMediaRecorder(ctx: Context, filename: String) {
             val metrics = ctx.getResources().getDisplayMetrics()
             mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
             mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE)
@@ -75,6 +72,25 @@ class Tools {
 
         fun Context.toast(message:String){
             Toast.makeText(applicationContext,message, Toast.LENGTH_SHORT).show()
+        }
+
+        fun convertLongToTime(time: Long): String {
+            val date = Date(time)
+            val format = SimpleDateFormat(solarDatePattern)
+            return format.format(date)
+        }
+
+        fun currentTimeToLong(): Long {
+            return System.currentTimeMillis()
+        }
+
+        fun currentTimeToMinute(): String {
+            return convertLongToTime(System.currentTimeMillis())
+        }
+
+        fun convertDateToLong(date: String): Long {
+            val df = SimpleDateFormat(solarDatePattern)
+            return df.parse(date).time
         }
     }
 }
