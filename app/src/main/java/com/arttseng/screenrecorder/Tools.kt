@@ -7,6 +7,7 @@ import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
+import android.util.Log
 import android.widget.Toast
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -34,6 +35,7 @@ class Tools {
                 mMediaRecorder.getSurface(), null, null);
 
             mMediaRecorder.start()
+            Log.e("TEST", "startRecord:" + currentTimeToMinute())
         }
 
         private fun setUpMediaRecorder(ctx: Context, filename: String) {

@@ -22,8 +22,8 @@ class ServiceDemo : Service() {
         // Send a notification that service is started
         toast("Service started.")
 
-        gameTimeList.add("2020/07/06 16:31")
-        gameTimeList.add("2020/07/06 16:35")
+        gameTimeList.add("2020/07/06 16:50")
+        gameTimeList.add("2020/07/06 16:55")
 
         Timer().schedule(timerTask {
             wakeupMain()
@@ -52,8 +52,8 @@ class ServiceDemo : Service() {
         if(checkGameTime()) {
             val intent = Intent(applicationContext, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("url", "https://smtv.io/room/2323726/625809")
-            intent.putExtra("title", "虚拟赛事 - 菲律宾 VS 土库曼 高清直播14")
+            intent.putExtra("url", "https://smtv.io")
+            intent.putExtra("title", "电竞足球-职业联赛-12分钟比赛 - 爸爸克里克(ROB)电竞 VS 赫塔费罗尼亚(CFC)电竞 高清直播47")
             startActivity(intent)
         }
 
