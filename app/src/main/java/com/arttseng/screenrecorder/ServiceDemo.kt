@@ -24,15 +24,17 @@ class ServiceDemo : Service() {
         // Send a notification that service is started
         toast("Service started.")
 
-        gameTimeList.add("2020/07/07 11:05")
-        gameTimeList.add("2020/07/07 11:10")
+        gameTimeList.add("2020/07/07 16:32")
+        gameTimeList.add("2020/07/07 16:35")
+        gameTimeList.add("2020/07/07 16:38")
 
         //Log.e("TEST", "service ScanPeriod="+ Consts.ScanPeriod)
         //Log.e("TEST", "service RecordingLength=" + Consts.RecordingLength)
 
         Timer().schedule(timerTask {
             //callMatchAPI()
-            captureScreen("https://smtv.io/room/2305228", "米儿")
+            if(checkGameTime())
+                wakeupMain("https://smtv.io/room/2305228", "米儿")
         },1000, Consts.ScanPeriod) //check API
 
 
@@ -42,7 +44,7 @@ class ServiceDemo : Service() {
 
     private fun callMatchAPI() {
         Tools.httpGet(Consts.MatchAPI, object:SolarCallBack{
-            override fun onErr(errorMsg: String?) {
+            override fun onOK(jsonObject: JSONObject?) {
                 //check是否有录影中赛事, 状态:录影中，等待中
                 //if 录影中，then pass
                 //if 等待中, then 挑选还不到结束时间，且status=0的赛事
@@ -60,8 +62,8 @@ class ServiceDemo : Service() {
                 }
             }
 
-            override fun onOK(jsonObject: JSONObject?) {
 
+            override fun onErr(errorMsg: String?) {
             }
 
         })

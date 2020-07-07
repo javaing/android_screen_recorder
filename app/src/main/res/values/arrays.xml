@@ -6,9 +6,9 @@
         <item>30分钟</item>
     </array>
     <array name="recording_length_minute">
-        <item>5</item>
-        <item>10</item>
-        <item>30</item>
+        <item>1</item>
+        <item>1</item>
+        <item>1</item>
     </array>
 
 
@@ -18,9 +18,9 @@
         <item>10分钟</item>
     </array>
     <array name="scan_period_minute">
-        <item>3</item>
-        <item>5</item>
-        <item>10</item>
+        <item>1</item>
+        <item>1</item>
+        <item>1</item>
     </array>
 
 
