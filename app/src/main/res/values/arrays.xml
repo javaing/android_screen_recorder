@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="recording_length">
+        <item>5分钟</item>
+        <item>10分钟</item>
+        <item>30分钟</item>
+    </array>
+    <array name="recording_length_minute">
+        <item>5</item>
+        <item>10</item>
+        <item>30</item>
+    </array>
+
+
+    <array name="scan_period">
+        <item>3分钟</item>
+        <item>5分钟</item>
+        <item>10分钟</item>
+    </array>
+    <array name="scan_period_minute">
+        <item>3</item>
+        <item>5</item>
+        <item>10</item>
+    </array>
+
+
+</resources>

@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">ScreenRecorder</string>
+    <string name="launch_setting_title">环境设定</string>
+    <string name="launch_start">背景启动</string>
+    <string name="app_desc">说明:依扫描赛事的频率查询后端，挑选未到结束时间，且status=0的赛事依录影时间长度设定录影</string>
+    <string name="more">更多</string>
+    <string name="scan_period">扫描赛事频率</string>
+    <string name="recording_length">录影长度</string>
+    <string name="save_path">影像路径</string>
+    <string name="update_status">更新状态</string>
+    <string name="scan_match">扫描赛事</string>
 </resources>

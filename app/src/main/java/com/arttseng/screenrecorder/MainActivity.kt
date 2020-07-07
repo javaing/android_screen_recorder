@@ -1,17 +1,14 @@
 package com.arttseng.screenrecorder
 
 import android.annotation.SuppressLint
-import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.os.PowerManager
 import android.util.Log
-import android.view.Window
 import android.webkit.WebSettings
 import androidx.appcompat.app.AppCompatActivity
 import com.arttseng.screenrecorder.Tools.Companion.toast
@@ -20,6 +17,7 @@ import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
+
     val REQUEST_MEDIA_PROJECTION = 1000
     lateinit var filename: String
     private lateinit var mHandler: Handler
@@ -43,12 +41,10 @@ class MainActivity : AppCompatActivity() {
         webSettings.setAppCacheEnabled(false)
         webSettings.cacheMode = WebSettings.LOAD_NO_CACHE
 
+        webView.loadUrl(intent.getStringExtra(Consts.URL))
+        val title = intent.getStringExtra(Consts.Title).replace("-","_").replace(" ", "")
 
-        webView.loadUrl(intent.getStringExtra("url"))
-        val title = intent.getStringExtra("title").replace("-","_").replace(" ", "")
-        filename = getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path + File.separator  + title +".mp4"
-        filename = "/storage/emulated/0/Pictures/screenshots" + File.separator  + title +".mp4"
-
+        filename = Tools.getFilename(title)
         Log.e("TEST", filename)
 
         val screenLock =
@@ -60,28 +56,40 @@ class MainActivity : AppCompatActivity() {
         requestRecording()
     }
 
+
+
     private fun requestRecording() {
         manager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        startActivityForResult(manager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION)
+        if (MyApplication.getData(Consts.KEY_MEDIA_PROJECTION_INTENT)==null) {
+            startActivityForResult(manager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION)
+        } else {
+            captureScreen();
+        }
+    }
+
+    private fun captureScreen() {
+        val staticResultCode = MyApplication.getData(Consts.KEY_MEDIA_PROJECTION_RESULTCODE) as Int
+        val staticIntentData = MyApplication.getData(Consts.KEY_MEDIA_PROJECTION_INTENT) as Intent
+        Tools.startRecord(this, staticResultCode, staticIntentData, filename)
+        mHandler.postDelayed(Runnable {
+            Tools.stopRecording()
+            toast("stop recording")
+            webView.loadData("<HTML><BODY><H3>Test</H3></BODY></HTML>","text/html","utf-8");
+            moveTaskToBack(true)
+        }, Consts.RecordingLength)
     }
 
 
     lateinit var manager: MediaProjectionManager
-    override fun onActivityResult(requestCode: Int, resultCode: Int, dataIntent: Intent?) {
-        super.onActivityResult(requestCode, resultCode, dataIntent)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         when(requestCode) {
             REQUEST_MEDIA_PROJECTION-> {
-                Tools.startRecord(this, resultCode, dataIntent!!, filename)
-                mHandler.postDelayed(Runnable {
-                    Tools.stopRecording()
-                    toast("stop recording")
-                    webView.loadData("<HTML><BODY><H3>Test</H3></BODY></HTML>","text/html","utf-8");
-                    moveTaskToBack(true)
-                }, 1000*60)
+                MyApplication.putData(Consts.KEY_MEDIA_PROJECTION_RESULTCODE, resultCode)
+                MyApplication.putData(Consts.KEY_MEDIA_PROJECTION_INTENT, data)
+                captureScreen()
             }
         }
     }
-
-
 
 }
