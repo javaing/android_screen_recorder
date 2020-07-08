@@ -31,9 +31,10 @@
             android:configChanges="orientation|screenSize|keyboardHidden"/>
 
         <service
-            android:name=".ServiceDemo"
+            android:name=".SacnService"
             android:enabled="true"
             android:exported="true"
+            android:foregroundServiceType="mediaProjection"
             />
     </application>
 
