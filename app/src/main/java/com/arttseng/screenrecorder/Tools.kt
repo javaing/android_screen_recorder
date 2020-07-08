@@ -7,8 +7,10 @@ import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import com.arttseng.screenrecorder.model.MatchInfo
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -26,7 +28,7 @@ import java.util.*
 
 class Tools {
     companion object {
-        val solarDatePattern = "yyyy/MM/dd HH:mm"
+        val solarDatePattern = "yyyy-MM-ddHH:mm:ss"
 
         lateinit var manager: MediaProjectionManager
         lateinit var mMediaRecorder: MediaRecorder
@@ -137,7 +139,27 @@ class Tools {
             return  minute*1000*60L
         }
 
+        fun getDeviceName():String {
+            return Build.MODEL // returns model name
+        }
 
+        fun getMatchTitle(match: MatchInfo):String {
+            return match.leagueName + "_" + match.gameStart.replace("-","").replace(":","")
+        }
+
+        fun isAfterStartBeforeEnd(it: MatchInfo):Boolean {
+            val start = matchTimeToLong( it.gameStart)
+            val end = matchTimeToLong( it.gameEnd)
+            val current = currentTimeToLong()
+            Log.e("TEST", "it=" + it.id + "," + it.gameStart+ "," + it.gameEnd)
+            return current in (start + 1) until end
+        }
+
+        fun matchTimeToLong(time: String):Long {
+            // "GameEnd":"2020-07-07T18:00:00Z",
+            val time = time.replace("T","").replace("Z","")
+            return convertDateToLong(time)
+        }
 
         private fun ApiSubscribe(observable: Observable<*>,observer: Observer<Any>) {
             observable.subscribeOn(Schedulers.io())
@@ -177,11 +199,11 @@ class Tools {
                 try {
                     val jobj = JSONObject(str)
                     if (jobj["code"] is Int && jobj["code"] as Int == 0) {
-                        callback.onOK(jobj)
+                        callback.onOK(str)
                         return
                     }
                     if (jobj["code"] is Int && jobj["code"] as Int == 200) {
-                        callback.onOK(jobj)
+                        callback.onOK(str)
                         return
                     }
                     //val err: String = getMessageStr(jobj)
@@ -220,17 +242,22 @@ class Tools {
         }
 
         fun httpGet(url: String, callBack: SolarCallBack) {
+            Log.e("TEST", "httpGet url=" + url)
             val request = Request.Builder()
                 .url(url)
                 .build()
-            MyApplication.get().getOkHttpClient().newCall(request).enqueue(object : Callback {
+            MyApplication.get().okHttpClient.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     e.printStackTrace()
+                    callBack?.run { onErr(e.message) }
                 }
 
                 @Throws(IOException::class)
                 override fun onResponse(call: Call, response: Response) {
-                    responseHandle(response, callBack)
+                    //responseHandle(response, callBack)
+                    callBack?.run {
+                        onOK(response.body!!.string())
+                    }
                 }
             })
         }

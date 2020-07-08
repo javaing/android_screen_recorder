@@ -100,7 +100,7 @@ class LaunchActivity : AppCompatActivity() {
             REQUEST_MEDIA_PROJECTION-> {
                 toast("设定完成")
 
-                val serviceClass = ServiceDemo::class.java
+                val serviceClass = SacnService::class.java
                 val intent = Intent(applicationContext, serviceClass)
                 if (!isServiceRunning(serviceClass)) {
                     MyApplication.putData(Consts.KEY_MEDIA_PROJECTION_RESULTCODE, resultCode);
