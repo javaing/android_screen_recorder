@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
+import android.media.MediaRecorder
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import android.os.Handler
@@ -14,13 +15,14 @@ import androidx.appcompat.app.AppCompatActivity
 import com.arttseng.screenrecorder.Tools.Companion.toast
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
+import java.util.*
+import kotlin.concurrent.timerTask
 
 
 class MainActivity : AppCompatActivity() {
 
     val REQUEST_MEDIA_PROJECTION = 1000
     lateinit var filename: String
-    private lateinit var mHandler: Handler
 
     @SuppressLint("InvalidWakeLockTag")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,8 +30,6 @@ class MainActivity : AppCompatActivity() {
 
         getWindow().setFormat(PixelFormat.TRANSLUCENT)
         setContentView(R.layout.activity_main)
-
-        mHandler = Handler()
 
         val webSettings = webView.settings
         val appCachePath: String = this.applicationContext.cacheDir.absolutePath
@@ -68,15 +68,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun captureScreen() {
-        val staticResultCode = MyApplication.getData(Consts.KEY_MEDIA_PROJECTION_RESULTCODE) as Int
-        val staticIntentData = MyApplication.getData(Consts.KEY_MEDIA_PROJECTION_INTENT) as Intent
-        Tools.startRecord(this, staticResultCode, staticIntentData, filename)
-        mHandler.postDelayed(Runnable {
+        val resultCode = MyApplication.getData(Consts.KEY_MEDIA_PROJECTION_RESULTCODE) as Int
+        val intent = MyApplication.getData(Consts.KEY_MEDIA_PROJECTION_INTENT) as Intent
+        val projection = manager?.getMediaProjection(resultCode, intent)
+        val recorder = MediaRecorder()
+        Tools.startRecord2(this,recorder, filename, projection)
+        Timer().schedule(timerTask{
             Tools.stopRecording()
             toast("stop recording")
             webView.loadData("<HTML><BODY><H3>Test</H3></BODY></HTML>","text/html","utf-8");
             moveTaskToBack(true)
-        }, Consts.RecordingLength)
+        },Consts.RecordingLength)
     }
 
 

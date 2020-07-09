@@ -106,6 +106,8 @@ class LaunchActivity : AppCompatActivity() {
                     MyApplication.putData(Consts.KEY_MEDIA_PROJECTION_RESULTCODE, resultCode);
                     MyApplication.putData(Consts.KEY_MEDIA_PROJECTION_INTENT, dataIntent);
                     toast("背景服务")
+                    intent.putExtra("code", resultCode);
+                    intent.putExtra("data", dataIntent);
                     startService(intent)
 
 //                    val intent = Intent(this, MainActivity::class.java)

@@ -11,7 +11,8 @@ class Consts {
         var RecordingLength = 1000*60*1L
         var ScanPeriod = 1000*60*5L
 
-        val MatchAPI = "https://smtv.io/getBanner?index=appindex"
-        val UpdateStatusAPI = "https://smtv.io/getBanner?index=appindex"
+        const val BaseURL = "http://203.69.207.107:9001/smzb/api/"
+        const val MatchAPI = "GetGameList"
+        const val UpdateStatusAPI = "GetGameList"
     }
 }

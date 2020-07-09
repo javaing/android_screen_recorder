@@ -33,7 +33,6 @@
         <service
             android:name=".SacnService"
             android:enabled="true"
-            android:exported="true"
             android:foregroundServiceType="mediaProjection"
             />
     </application>

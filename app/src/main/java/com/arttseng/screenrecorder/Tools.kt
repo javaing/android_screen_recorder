@@ -4,17 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
+import android.icu.util.UniversalTimeScale.toLong
 import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import com.arttseng.screenrecorder.model.MatchInfo
-import io.reactivex.Observable
-import io.reactivex.Observer
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import com.arttseng.screenrecorder.tools.GameData
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Request
@@ -35,7 +32,6 @@ class Tools {
         lateinit var projection: MediaProjection
         lateinit var virtualDisplay: VirtualDisplay
 
-
         fun startRecord(ctx:Context, resultCode: Int, data: Intent, filename: String) {
             mMediaRecorder = MediaRecorder()
             manager = ctx.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
@@ -49,6 +45,36 @@ class Tools {
 
             mMediaRecorder.start()
             Log.e("TEST", "startRecord:" + currentTimeToMinute())
+        }
+
+
+        fun startRecord2(ctx:Context, outterRecorder: MediaRecorder, filename: String, projection: MediaProjection) {
+            setUpMediaRecorder2(outterRecorder, ctx, filename)
+            val metrics = ctx.getResources().getDisplayMetrics()
+            virtualDisplay = projection.createVirtualDisplay("ScreenRecording",
+                metrics.widthPixels, metrics.heightPixels, metrics.densityDpi, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                outterRecorder.getSurface(), null, null);
+
+            outterRecorder.start()
+            Log.e("TEST", "startRecord:" + currentTimeToMinute())
+        }
+
+        private fun setUpMediaRecorder2(outterRecorder: MediaRecorder,ctx: Context, filename: String) {
+            val metrics = ctx.getResources().getDisplayMetrics()
+            outterRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
+            outterRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE)
+            outterRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            outterRecorder.setOutputFile(filename)
+            outterRecorder.setVideoEncodingBitRate(10000000)
+            outterRecorder.setVideoFrameRate(30)
+            outterRecorder.setVideoSize(metrics.widthPixels, metrics.heightPixels)
+            outterRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+            outterRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+            try {
+                outterRecorder.prepare()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
         }
 
         private fun setUpMediaRecorder(ctx: Context, filename: String) {
@@ -143,102 +169,25 @@ class Tools {
             return Build.MODEL // returns model name
         }
 
-        fun getMatchTitle(match: MatchInfo):String {
-            return match.leagueName + "_" + match.gameStart.replace("-","").replace(":","")
+        fun getMatchTitle(match: GameData):String {
+            return match.LeagueName + "_" + match.GameStart.replace("-","").replace(":","")
         }
 
-        fun isAfterStartBeforeEnd(it: MatchInfo):Boolean {
-            val start = matchTimeToLong( it.gameStart)
-            val end = matchTimeToLong( it.gameEnd)
+        fun isAfterStartBeforeEnd(it: GameData):Boolean {
+            Log.e("TEST", "it=" + it.id + "," + it.GameStart+ "," + it.GameEnd)
+            val start = matchTimeToLong( it.GameStart)
+            var end = it.GameEnd?.let { it1 -> matchTimeToLong(it1) }!!
             val current = currentTimeToLong()
-            Log.e("TEST", "it=" + it.id + "," + it.gameStart+ "," + it.gameEnd)
             return current in (start + 1) until end
         }
 
         fun matchTimeToLong(time: String):Long {
+            if(time == null || time.equals("null")) {
+                return 0
+            }
             // "GameEnd":"2020-07-07T18:00:00Z",
             val time = time.replace("T","").replace("Z","")
             return convertDateToLong(time)
-        }
-
-        private fun ApiSubscribe(observable: Observable<*>,observer: Observer<Any>) {
-            observable.subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(observer)
-        }
-
-        //    public static void httpDelete(String key,String url, final SolarCallBack callback) {
-        //        Request request;
-        //        try {
-        //            request = deleteRequest(url+key);
-        //        }
-        //        catch (Exception e) {
-        //            return;
-        //        }
-        //
-        //        MyApp.get().getOkHttpClient().newCall(request).enqueue(new Callback() {
-        //            @Override
-        //            public void onFailure(Call call, IOException e) {
-        //                e.printStackTrace();
-        //            }
-        //
-        //            @Override
-        //            public void onResponse(Call call, okhttp3.Response response) throws IOException {
-        //                responseHandle(response, callback);
-        //            }
-        //        });
-        //    }
-        @Throws(IOException::class)
-        private fun responseHandle(
-            response: Response,
-            callback: SolarCallBack
-        ) {
-            val str = response.body!!.string()
-            if (response.code == 200) {
-                try {
-                    val jobj = JSONObject(str)
-                    if (jobj["code"] is Int && jobj["code"] as Int == 0) {
-                        callback.onOK(str)
-                        return
-                    }
-                    if (jobj["code"] is Int && jobj["code"] as Int == 200) {
-                        callback.onOK(str)
-                        return
-                    }
-                    //val err: String = getMessageStr(jobj)
-                    //callback.onErr(err)
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
-                    callback.onErr("http error:")
-                }
-            } else if (response.code > 400) {
-                //callback.onErr(MyApp.get().getString(R.string.please_relogin))
-            } else {
-                callback.onErr(str)
-            }
-        }
-
-        fun getMessageStr(jobj: JSONObject): String? {
-            var msg = ""
-            try {
-                if (jobj.has("message")) {
-                    msg = jobj["message"] as String
-                } else if (jobj.has("msg")) {
-                    msg = jobj["msg"] as String
-                } else if (jobj.has("result")) {
-                    //{ "code": -1,"result": {"target": "http://alpha.solartech.gq","error": "验证码错误","code": -1,"phone": "886928867079"}}
-                    if (jobj["result"] is JSONObject) {
-                        val jobj2 = jobj["result"] as JSONObject
-                        msg = jobj2["error"] as String
-                    }
-                } else {
-                    msg = "" + jobj["message"]
-                }
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            }
-            return msg
         }
 
         fun httpGet(url: String, callBack: SolarCallBack) {
@@ -256,7 +205,7 @@ class Tools {
                 override fun onResponse(call: Call, response: Response) {
                     //responseHandle(response, callBack)
                     callBack?.run {
-                        onOK(response.body!!.string())
+                        onOK(response.body().toString())
                     }
                 }
             })
