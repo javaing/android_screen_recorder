@@ -8,8 +8,7 @@ import android.os.IBinder
 import android.util.Log
 import com.arttseng.screenrecorder.Tools.Companion.toast
 import com.arttseng.screenrecorder.tools.GameData
-import com.arttseng.screenrecorder.tools.RetrofixFactor
-import com.squareup.moshi.JsonAdapter
+import com.arttseng.screenrecorder.tools.RetrofitFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import kotlinx.coroutines.Dispatchers
@@ -75,19 +74,18 @@ class SacnService : Service() {
 
 
         val moshi = Moshi.Builder().build()
-        //val adapter = moshi.adapter<List<GameData>>(GameData::class.java)
         val type = Types.newParameterizedType(List::class.java, GameData::class.java)
         val adapter = moshi.adapter<List<GameData>>(type)
         val mockData = adapter.fromJson(testStr)
         Log.e("TEST", "test json="+mockData )
+        //mockData?.let { mainLogic(mockData) }
 
 
         Timer().schedule(timerTask {
-            //callMatchAPI()
+            scanMatch()
             //if(checkGameTime())
                 //wakeupMain("https://smtv.io/room/2305228", "米儿")
 
-            mockData?.let { mainLogic(mockData) }
         },1000, Consts.ScanPeriod) //check API
 
 
@@ -95,18 +93,9 @@ class SacnService : Service() {
         return START_STICKY
     }
 
-    private fun callMatchAPI() {
-//        Tools.httpGet(Consts.MatchAPI, object:SolarCallBack{
-//            override fun onOK(jsonStr: String) {
-//                mainLogic(jsonStr)
-//            }
-//            override fun onErr(errorMsg: String?) {
-//            }
-//
-//        })
-
+    private fun scanMatch() {
         GlobalScope.launch(Dispatchers.Main) {
-            val webResponse = RetrofixFactor.WebAccess.API.getPartsAsync().await()
+            val webResponse = RetrofitFactory.WebAccess.API.getPartsAsync().await()
             if (webResponse.isSuccessful) {
                 val data : List<GameData>? = webResponse.body()
                 Log.d("TEST", data?.toString())

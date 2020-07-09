@@ -6,7 +6,7 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-class RetrofixFactor
+class RetrofitFactory
 {
     object WebAccess {
         val API : ApiClient by lazy {
