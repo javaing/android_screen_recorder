@@ -95,7 +95,7 @@ class SacnService : Service() {
 
     private fun scanMatch() {
         GlobalScope.launch(Dispatchers.Main) {
-            val webResponse = RetrofitFactory.WebAccess.API.getPartsAsync().await()
+            val webResponse = RetrofitFactory.WebAccess.API.getGameList().await()
             if (webResponse.isSuccessful) {
                 val data : List<GameData>? = webResponse.body()
                 Log.d("TEST", data?.toString())
@@ -136,11 +136,15 @@ class SacnService : Service() {
 
 
 
-    private fun callUpdateStatusAPI() {
-        Tools.httpGet(Consts.UpdateStatusAPI, object:SolarCallBack{
-            override fun onErr(errorMsg: String?) {}
-            override fun onOK(str: String) {}
-        })
+    private fun updateStatusAPI() {
+        GlobalScope.launch(Dispatchers.Main) {
+            val webResponse = RetrofitFactory.WebAccess.API.updateStatus(Tools.getDeviceName()).await()
+            if (webResponse.isSuccessful) {
+                Log.d("TEST","success")
+            } else {
+                Log.d("TEST", "Error ${webResponse.code()}")
+            }
+        }
     }
 
     override fun onDestroy() {

@@ -6,6 +6,6 @@ import retrofit2.Response
 import retrofit2.http.*
 
 interface ApiClient {
-    @GET(Consts.MatchAPI) fun getPartsAsync(): Deferred<Response<List<GameData>>>
-    @POST(Consts.MatchAPI) fun addPartAsync(@Body newGame : GameData): Deferred<Response<Void>>
+    @GET(Consts.MatchAPI) fun getGameList(): Deferred<Response<List<GameData>>>
+    @POST(Consts.UpdateStatusAPI) fun updateStatus(@Body device : String): Deferred<Response<Void>>
 }
