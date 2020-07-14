@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 
 public class MyApplication extends Application {
@@ -64,10 +65,10 @@ public class MyApplication extends Application {
     public final OkHttpClient getOkHttpClient() {
         if(okHttpClient==null) {
             if(BuildConfig.DEBUG) {
-                //HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-                //interceptor.level(HttpLoggingInterceptor.Level.BODY);
+                HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+                interceptor.level(HttpLoggingInterceptor.Level.BODY);
                 okHttpClient = new OkHttpClient.Builder()
-                        //.addInterceptor(interceptor)
+                        .addInterceptor(interceptor)
                         .retryOnConnectionFailure(true)
                         //.addInterceptor(UserAgentInterc)
                         .connectTimeout(80, TimeUnit.SECONDS)

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tool="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_marginLeft="@dimen/margin_left"
     android:layout_marginRight="@dimen/margin_left"
@@ -38,7 +38,7 @@
             android:layout_weight="1" />
 
         <Spinner
-            android:id="@+id/spinner1"
+            android:id="@+id/spinner_scan"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/spinner_height"
             />
@@ -64,7 +64,7 @@
             android:layout_weight="1" />
 
         <Spinner
-            android:id="@+id/spinner2"
+            android:id="@+id/spinner_recording"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/spinner_height"
             android:layout_gravity="right"
@@ -72,93 +72,67 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_more"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/more"
-        android:layout_gravity="right"
-        android:layout_marginTop="20dp"
-        />
-
-    <LinearLayout
-        android:id="@+id/ll_more"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="invisible"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         >
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginRight="8dp"
+            >
+
+            <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="@dimen/margin_between">
+            android:text="Base URL"
+            android:layout_marginTop="8dp"
+            />
+
+            <EditText
+                android:id="@+id/et_baseurl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="http://10.80.1.18:9001/smzb/api/"
+                />
+
+            <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save Path"
+            android:layout_marginTop="8dp"
+            />
+
+            <EditText
+                android:id="@+id/et_savepath"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="/storage/emulated/0/Pictures/screenshots"
+                />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/save_path"
+                android:text="延后录影(赛事开始+分钟)"
+                android:layout_marginTop="8dp"
                 />
-            <TextView
-                android:id="@+id/tv_savePath"
-                android:layout_width="0dp"
+
+            <EditText
+                android:id="@+id/et_shift"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="right"
-                tools:text="/storage/emulated/0/Pictures/screenshots"
-                android:textColor="@android:color/black"
+                android:text="0"
                 />
+
+
         </LinearLayout>
+    </ScrollView>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="@dimen/margin_between">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/scan_match"
-                />
-            <TextView
-                android:id="@+id/tv_api1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="right"
-                tools:text="https://smtv.io"
-                android:textColor="@android:color/black"
-                />
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="@dimen/margin_between">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/update_status"
-                />
-            <TextView
-                android:id="@+id/tv_api2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="right"
-                tools:text="https://smtv.io"
-                android:textColor="@android:color/black"
-                />
-        </LinearLayout>
 
-    </LinearLayout>
-
-    <View
-        android:layout_width="1dp"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        />
 
     <TextView
         android:id="@+id/tv_desc"

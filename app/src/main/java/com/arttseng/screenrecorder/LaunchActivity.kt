@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
@@ -23,39 +24,41 @@ class LaunchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_launch)
 
-        val adapter1 = ArrayAdapter.createFromResource(this, R.array.recording_length, android.R.layout.simple_spinner_dropdown_item)
-        spinner1.adapter = adapter1
-        spinner1.setSelection(Tools.readData(this,"recording_length", 1))
+        val adapter1 = ArrayAdapter.createFromResource(this, R.array.scan_period, android.R.layout.simple_spinner_dropdown_item)
+        spinner_scan.adapter = adapter1
+        spinner_scan.setSelection(Tools.readData(this,"scan_period", 1))
 
-        val adapter2 = ArrayAdapter.createFromResource(this, R.array.scan_period, android.R.layout.simple_spinner_dropdown_item)
-        spinner2.adapter = adapter2
-        spinner2.setSelection(Tools.readData(this,"scan_period", 1))
+        val adapter2 = ArrayAdapter.createFromResource(this, R.array.recording_length, android.R.layout.simple_spinner_dropdown_item)
+        spinner_recording.adapter = adapter2
+        spinner_recording.setSelection(Tools.readData(this,"recording_length", 1))
+
+        et_baseurl.setText( Tools.readData(this,"BaseURL", Const.BaseURL)?:Const.BaseURL)
+        et_savepath.setText( Tools.readData(this,"SavePath", Const.SavePath)?:Const.SavePath)
+        et_shift.setText( Tools.readData(this,"RecordingShift", Const.RecordingShift)?:Const.RecordingShift)
+
 
         tv_start.setOnClickListener {
-            Tools.saveData(this,"scan_period", spinner1.selectedItemPosition)
-            Tools.saveData(this,"recording_length", spinner2.selectedItemPosition)
+            Tools.saveData(this,"scan_period", spinner_scan.selectedItemPosition)
+            Tools.saveData(this,"recording_length", spinner_recording.selectedItemPosition)
+            Tools.saveData(this,"BaseURL", et_baseurl.text.toString())
+            Tools.saveData(this,"SavePath", et_savepath.text.toString())
+            Tools.saveData(this,"RecordingShift", et_shift.text.toString())
 
             val recording = resources.getIntArray(R.array.recording_length_minute)
             val scan = resources.getIntArray(R.array.scan_period_minute)
-            Consts.ScanPeriod = Tools.minuteToLong( recording[spinner1.selectedItemPosition] )
-            Consts.RecordingLength = Tools.minuteToLong( scan[spinner2.selectedItemPosition] )
+            Const.ScanPeriod = Tools.minuteToLong( scan[spinner_scan.selectedItemPosition] )
+            Const.RecordingLength = Tools.minuteToLong( recording[spinner_recording.selectedItemPosition] )
+            Const.BaseURL = et_baseurl.text.toString()
+            Const.SavePath = et_savepath.text.toString()
+            Const.RecordingShift = et_shift.text.toString()
+
+           //Log.e("TEST", "SET ="+Const.ScanPeriod)
+            //Log.e("TEST", "SET ="+Const.RecordingLength)
+            //Log.e("TEST", "SET ="+Const.RecordingShift)
 
             setupPermissions()
         }
 
-        tv_savePath.text = Consts.VideoPath
-        tv_api1.text = Consts.MatchAPI
-        tv_api2.text = Consts.UpdateStatusAPI
-
-        tv_more.setOnClickListener {
-            if(ll_more.visibility== View.VISIBLE) {
-                tv_more.setTextColor(Color.GRAY)
-                ll_more.visibility = View.INVISIBLE
-            } else {
-                tv_more.setTextColor(Color.BLUE)
-                ll_more.visibility = View.VISIBLE
-            }
-        }
 
     }
 
@@ -103,24 +106,19 @@ class LaunchActivity : AppCompatActivity() {
                 val serviceClass = SacnService::class.java
                 val intent = Intent(applicationContext, serviceClass)
                 if (!isServiceRunning(serviceClass)) {
-                    MyApplication.putData(Consts.KEY_MEDIA_PROJECTION_RESULTCODE, resultCode);
-                    MyApplication.putData(Consts.KEY_MEDIA_PROJECTION_INTENT, dataIntent);
-                    toast("背景服务")
+                    MyApplication.putData(Const.KEY_MEDIA_PROJECTION_RESULTCODE, resultCode);
+                    MyApplication.putData(Const.KEY_MEDIA_PROJECTION_INTENT, dataIntent);
+                    toast("背景执行中")
                     intent.putExtra("code", resultCode);
                     intent.putExtra("data", dataIntent);
                     startService(intent)
-
-//                    val intent = Intent(this, MainActivity::class.java)
-//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                    intent.putExtra("url", "https://smtv.io/room/2334813")
-//                    intent.putExtra("title", "电竞足球-职业联赛-12分钟比赛 - 爸爸克里克(ROB)电竞 VS 赫塔费罗尼亚(CFC)电竞 高清直播47")
-//                    startActivity(intent)
+                    moveTaskToBack(true)
 
                 } else {
-                    toast("Service already running.")
+                    toast("背景已执行")
                 }
 
-                moveTaskToBack(true)
+
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.arttseng.screenrecorder.tools
 
 
-import com.arttseng.screenrecorder.Consts
+import com.arttseng.screenrecorder.Const
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
@@ -12,7 +12,7 @@ data class GameData (
     val LeagueName : String,
     val GameStart : String,
     var GameEnd : String?=null,
-    var Url : String=Consts.BaseURL,
+    var Url : String?,
     var MobileNumber : String?=null,
     val Status : Int
 )

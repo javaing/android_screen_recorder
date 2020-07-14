@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
-import android.icu.util.UniversalTimeScale.toLong
 import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
@@ -12,12 +11,6 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import com.arttseng.screenrecorder.tools.GameData
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.Request
-import okhttp3.Response
-import org.json.JSONException
-import org.json.JSONObject
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -31,12 +24,14 @@ class Tools {
         lateinit var mMediaRecorder: MediaRecorder
         lateinit var projection: MediaProjection
         lateinit var virtualDisplay: VirtualDisplay
+        var isRecording  = false
 
         fun startRecord(ctx:Context, resultCode: Int, data: Intent, filename: String) {
+            isRecording = true
             mMediaRecorder = MediaRecorder()
             manager = ctx.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
 
-            projection = manager?.getMediaProjection(resultCode, data)
+            projection = manager.getMediaProjection(resultCode, data)
             setUpMediaRecorder(ctx, filename)
             val metrics = ctx.getResources().getDisplayMetrics()
             virtualDisplay = projection.createVirtualDisplay("ScreenRecording",
@@ -56,7 +51,7 @@ class Tools {
                 outterRecorder.getSurface(), null, null);
 
             outterRecorder.start()
-            Log.e("TEST", "startRecord:" + currentTimeToMinute())
+            Log.e("TEST", "startRecord2:" + currentTimeToMinute())
         }
 
         private fun setUpMediaRecorder2(outterRecorder: MediaRecorder,ctx: Context, filename: String) {
@@ -95,12 +90,13 @@ class Tools {
             }
         }
 
-        fun stopRecording() {
-            mMediaRecorder.setOnErrorListener(null)
-            mMediaRecorder.setOnInfoListener(null)
-            mMediaRecorder.setPreviewDisplay(null)
+        fun stopRecording(recorder: MediaRecorder, projection: MediaProjection) {
+            isRecording = false
+            recorder.setOnErrorListener(null)
+            recorder.setOnInfoListener(null)
+            recorder.setPreviewDisplay(null)
             try {
-                mMediaRecorder.stop()
+                recorder.stop()
             } catch (e: IllegalStateException) {
                 e.printStackTrace()
             } catch (e: RuntimeException) {
@@ -116,7 +112,7 @@ class Tools {
         }
 
         private fun createPath() {
-            var pathFile = File(Consts.VideoPath)
+            var pathFile = File(Const.SavePath)
             if(!pathFile.exists()) {
                 val success = pathFile.mkdirs()
                 if (success) Log.e("TEST","Directory path was created successfully")
@@ -126,7 +122,7 @@ class Tools {
 
         fun getFilename(title:String):String {
             createPath()
-            return Consts.VideoPath + File.separator  + title +".mp4"
+            return Const.SavePath + File.separator  + title +".mp4"
         }
 
         fun convertLongToTime(time: Long): String {
@@ -148,6 +144,19 @@ class Tools {
             return df.parse(date).time
         }
 
+        fun convertDateToDate(date: String): Date {
+            val df = SimpleDateFormat(solarDatePattern)
+            return df.parse(date)
+        }
+
+        fun getShiftTime(date:Date, shift:Int):Date {
+            val cal = Calendar.getInstance() // creates calendar
+            cal.time = date // sets calendar time/date
+            cal.add(Calendar.MINUTE, Const.RecordingShift.toInt()) // adds one hour
+            return cal.time
+        }
+
+
         private const val DATA = "PREF_DATA"
         fun readData(ctx: Context, key:String, defaultInt: Int):Int {
             val settings = ctx.getSharedPreferences(DATA, 0)
@@ -161,12 +170,28 @@ class Tools {
                 .apply()
         }
 
+        fun readData(ctx: Context, key:String, default: String): String? {
+            val settings = ctx.getSharedPreferences(DATA, 0)
+            return settings.getString(key, default)
+        }
+
+        fun saveData(ctx: Context, key:String, value: String) {
+            val settings = ctx.getSharedPreferences(DATA, 0)
+            settings.edit()
+                .putString(key,value)
+                .apply()
+        }
+
         fun minuteToLong(minute: Int):Long {
             return  minute*1000*60L
         }
 
         fun getDeviceName():String {
-            return Build.MODEL // returns model name
+            return Build.MANUFACTURER + "_"+Build.MODEL // returns model name
+        }
+
+        fun getAndroidVersion():String {
+            return Build.VERSION.RELEASE // returns model name
         }
 
         fun getMatchTitle(match: GameData):String {
@@ -174,10 +199,13 @@ class Tools {
         }
 
         fun isAfterStartBeforeEnd(it: GameData):Boolean {
-            Log.e("TEST", "it=" + it.id + "," + it.GameStart+ "," + it.GameEnd)
+            if (it.Status!=0)
+                return false
+            //Log.e("TEST", "it=" + it.id + "," + it.GameStart+ "," + it.GameEnd)
             val start = matchTimeToLong( it.GameStart)
-            var end = it.GameEnd?.let { it1 -> matchTimeToLong(it1) }!!
+            var end = matchTimeToLong(it.GameEnd?:"2030-01-01T00:00:00Z")
             val current = currentTimeToLong()
+            //Log.e("TEST", "result=" + (current in (start + 1) until end))
             return current in (start + 1) until end
         }
 
@@ -190,25 +218,13 @@ class Tools {
             return convertDateToLong(time)
         }
 
-        fun httpGet(url: String, callBack: SolarCallBack) {
-            Log.e("TEST", "httpGet url=" + url)
-            val request = Request.Builder()
-                .url(url)
-                .build()
-            MyApplication.get().okHttpClient.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    e.printStackTrace()
-                    callBack?.run { onErr(e.message) }
-                }
-
-                @Throws(IOException::class)
-                override fun onResponse(call: Call, response: Response) {
-                    //responseHandle(response, callBack)
-                    callBack?.run {
-                        onOK(response.body().toString())
-                    }
-                }
-            })
+        fun matchTimeToDate(time: String):Date {
+            if(time == null || time.equals("null")) {
+                return Date()
+            }
+            // "GameEnd":"2020-07-07T18:00:00Z",
+            val time = time.replace("T","").replace("Z","")
+            return convertDateToDate(time)
         }
     }
 }
