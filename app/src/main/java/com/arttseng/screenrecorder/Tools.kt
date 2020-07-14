@@ -105,6 +105,7 @@ class Tools {
                 e.printStackTrace()
             }
             projection?.stop()
+            Log.e("TEST","stopRecording done.")
         }
 
         fun Context.toast(message:String){

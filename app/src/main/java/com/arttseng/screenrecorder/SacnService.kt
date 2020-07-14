@@ -71,11 +71,11 @@ class SacnService : Service() {
     }
 
     private fun scan() {
-        //val mockData = genTestData()
+        val mockData = genTestData()
 
         Timer().schedule(timerTask {
-            //mockData?.let { mainLogic(mockData) }
-            scanMatch()
+            mockData?.let { processData(mockData) }
+            //scanMatch()
         }, 1000, Const.ScanPeriod)
     }
 
@@ -124,8 +124,8 @@ class SacnService : Service() {
                         updateStatusAPI(it.id, it.MobileNumber?:"0000")
 
                         Timer().schedule(timerTask {
-                            wakeupMain(it.Url?:Const.SMTV, Tools.getMatchTitle(it))
-                            //captureScreen(it.Url, Tools.getMatchTitle(it))
+                            //wakeupMain(it.Url?:Const.SMTV, Tools.getMatchTitle(it))
+                            captureScreen(it.Url?:Const.SMTV, Tools.getMatchTitle(it))
                         }, shiftDate(it))
                         return
                     }
