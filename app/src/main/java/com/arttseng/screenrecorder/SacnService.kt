@@ -77,7 +77,6 @@ class SacnService : Service() {
             //mockData?.let { mainLogic(mockData) }
             scanMatch()
         }, 1000, Const.ScanPeriod)
-
     }
 
     private fun genTestData():List<GameData>? {
@@ -124,20 +123,21 @@ class SacnService : Service() {
                         Tools.isRecording=true
                         updateStatusAPI(it.id, it.MobileNumber?:"0000")
 
-                        var date = Tools.matchTimeToDate(it.GameStart)
-                        date = Tools.getShiftTime(date, Const.RecordingShift.toInt())
-                        Log.e("TEST", "shift date=" + date)
-
                         Timer().schedule(timerTask {
                             wakeupMain(it.Url?:Const.SMTV, Tools.getMatchTitle(it))
                             //captureScreen(it.Url, Tools.getMatchTitle(it))
-                        }, date)
+                        }, shiftDate(it))
                         return
                     }
                 }
 
             }
         }
+    }
+
+    private fun shiftDate(it:GameData):Date {
+        var date = Tools.matchTimeToDate(it.GameStart)
+        return Tools.getShiftTime(date, Const.RecordingShift.toInt())
     }
 
 
