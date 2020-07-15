@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.media.MediaRecorder
+import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.*
 import android.util.Log
@@ -14,7 +15,7 @@ import com.arttseng.screenrecorder.Tools.Companion.toast
 import kotlinx.android.synthetic.main.activity_main.*
 
 
-class WebViewActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     val REQUEST_MEDIA_PROJECTION = 1000
     lateinit var filename: String
@@ -30,7 +31,7 @@ class WebViewActivity : AppCompatActivity() {
         getWindow().setFormat(PixelFormat.TRANSLUCENT)
         setContentView(R.layout.activity_main)
 
-        emptyWebView()
+        loadBlank()
 
         val webSettings = webView.settings
         val appCachePath: String = this.applicationContext.cacheDir.absolutePath
@@ -58,6 +59,35 @@ class WebViewActivity : AppCompatActivity() {
     }
 
 
+//    fun turnOnStrictMode() {
+//        if (BuildConfig.DEBUG) {
+//            StrictMode.setThreadPolicy(
+//                StrictMode.ThreadPolicy.Builder()
+//                    .detectAll()
+//                    .penaltyLog()
+//                    .penaltyDeath().build())
+//            StrictMode.setVmPolicy(
+//                StrictMode.VmPolicy.Builder()
+//                    .detectAll()
+//                    .penaltyLog()
+//                    .penaltyDeath().build())
+//        }
+//    }
+//    fun permitDiskReads(func: () -> Any) : Any {
+//        if (BuildConfig.DEBUG) {
+//            val oldThreadPolicy = StrictMode.getThreadPolicy()
+//            StrictMode.setThreadPolicy(
+//                StrictMode.ThreadPolicy.Builder(oldThreadPolicy)
+//                    .permitDiskReads().build())
+//            val anyValue = func()
+//            StrictMode.setThreadPolicy(oldThreadPolicy)
+//
+//            return anyValue
+//        } else {
+//            return func()
+//        }
+//    }
+
     private fun requestRecording() {
         manager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         if (MyApplication.getData(Const.KEY_MEDIA_PROJECTION_INTENT)==null) {
@@ -67,7 +97,7 @@ class WebViewActivity : AppCompatActivity() {
         }
     }
 
-    private fun emptyWebView() {
+    private fun loadBlank() {
         webView.loadData("<HTML><BODY><H3>AutoRecording Webview</H3></BODY></HTML>","text/html","utf-8");
     }
 
@@ -81,11 +111,11 @@ class WebViewActivity : AppCompatActivity() {
 
         Handler().postDelayed({
             Tools.stopRecording(recorder, projection)
-            //emptyWebView()
+            loadBlank()
             toast("录影结束")
             Log.e("TEST", "录影结束" )
             Log.e("TEST", "isRecording="+Tools.isRecording)
-            //moveTaskToBack(true)
+            moveTaskToBack(true)
         },Const.RecordingLength)
     }
 

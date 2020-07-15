@@ -10,8 +10,12 @@ import com.arttseng.screenrecorder.tools.GameData
 import com.arttseng.screenrecorder.tools.RetrofitFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.concurrent.timerTask
 
 
@@ -68,30 +72,13 @@ class SacnService : Service() {
         return START_STICKY
     }
 
-//    inline fun startCoroutineTimer(delayMillis: Long = 0, repeatMillis: Long = 0, crossinline action: () -> Unit) = GlobalScope.launch {
-//        delay(delayMillis)
-//        if (repeatMillis > 0) {
-//            while (true) {
-//                action()
-//                delay(repeatMillis)
-//            }
-//        } else {
-//            action()
-//        }
-//    }
-
     private fun scan() {
         val mockData = genTestData()
 
-//        Timer().schedule(timerTask {
-//            //mockData?.let { processData(mockData) }
-//            scanMatch()
-//        }, 1000, Const.ScanPeriod)
-
-        Tools.startCoroutineTimer(delayMillis = 1000, repeatMillis = Const.ScanPeriod) {
-            mockData?.let { processData(mockData) }
-            //scanMatch()
-        }
+        Timer().schedule(timerTask {
+            //mockData?.let { processData(mockData) }
+            scanMatch()
+        }, 1000, Const.ScanPeriod)
 
     }
 
@@ -188,7 +175,7 @@ class SacnService : Service() {
     //内开Webview
     private fun wakeupMain(url:String, title:String) {
         //if(checkGameTime()) {
-        val intent = Intent(applicationContext, WebViewActivity::class.java)
+        val intent = Intent(applicationContext, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         intent.putExtra(Const.URL, url)

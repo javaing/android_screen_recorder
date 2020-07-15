@@ -11,9 +11,6 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import com.arttseng.screenrecorder.tools.GameData
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -229,18 +226,6 @@ class Tools {
             // "GameEnd":"2020-07-07T18:00:00Z",
             val time = time.replace("T","").replace("Z","")
             return convertDateToDate(time)
-        }
-
-        inline fun startCoroutineTimer(delayMillis: Long = 0, repeatMillis: Long = 0, crossinline action: () -> Unit) = GlobalScope.launch {
-            delay(delayMillis)
-            if (repeatMillis > 0) {
-                while (true) {
-                    action()
-                    delay(repeatMillis)
-                }
-            } else {
-                action()
-            }
         }
     }
 }
