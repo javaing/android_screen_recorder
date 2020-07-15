@@ -10,10 +10,13 @@ import com.arttseng.screenrecorder.tools.GameData
 import com.arttseng.screenrecorder.tools.RetrofitFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import io.reactivex.Completable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.concurrent.timerTask
 
 
@@ -73,10 +76,20 @@ class SacnService : Service() {
     private fun scan() {
         val mockData = genTestData()
 
-        Timer().schedule(timerTask {
-            mockData?.let { processData(mockData) }
-            //scanMatch()
-        }, 1000, Const.ScanPeriod)
+//        Timer().schedule(timerTask {
+//            mockData?.let { processData(mockData) }
+//            //scanMatch()
+//        }, 1000, Const.ScanPeriod)
+
+        Completable.complete()
+            .delay(1000, TimeUnit.MILLISECONDS)
+            .repeat(Const.RecordingShift.toLong())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnComplete {
+                mockData?.let { processData(mockData) }
+                //scanMatch()
+            }
+            .subscribe()
     }
 
     private fun genTestData():List<GameData>? {
@@ -95,15 +108,15 @@ class SacnService : Service() {
         }
 
         GlobalScope.launch(Dispatchers.IO) {
-                val webResponse = RetrofitFactory.WebAccess.API.getGameList().await()
-                if (webResponse.isSuccessful) {
-                    val data : List<GameData>? = webResponse.body()
-                    //Log.d("TEST", data?.toString())
+            val webResponse = RetrofitFactory.WebAccess.API.getGameList().await()
+            if (webResponse.isSuccessful) {
+                val data : List<GameData>? = webResponse.body()
+                //Log.d("TEST", data?.toString())
 
-                    data?.let { processData(data) }
-                } else {
-                    Log.d("TEST", "Error ${webResponse.code()}")
-                }
+                data?.let { processData(data) }
+            } else {
+                Log.d("TEST", "Error ${webResponse.code()}")
+            }
         }
     }
 
@@ -124,8 +137,8 @@ class SacnService : Service() {
                         updateStatusAPI(it.id, it.MobileNumber?:"0000")
 
                         Timer().schedule(timerTask {
-                            //wakeupMain(it.Url?:Const.SMTV, Tools.getMatchTitle(it))
-                            captureScreen(it.Url?:Const.SMTV, Tools.getMatchTitle(it))
+                            wakeupMain(it.Url?:Const.SMTV, Tools.getMatchTitle(it))
+                            //captureScreen(it.Url?:Const.SMTV, Tools.getMatchTitle(it))
                         }, shiftDate(it))
                         return
                     }
@@ -172,12 +185,12 @@ class SacnService : Service() {
     //内开Webview
     private fun wakeupMain(url:String, title:String) {
         //if(checkGameTime()) {
-            val intent = Intent(applicationContext, MainActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            intent.putExtra(Const.URL, url)
-            intent.putExtra(Const.Title, title)
-            startActivity(intent)
+        val intent = Intent(applicationContext, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        intent.putExtra(Const.URL, url)
+        intent.putExtra(Const.Title, title)
+        startActivity(intent)
         //}
     }
 
