@@ -10,10 +10,9 @@ import com.arttseng.screenrecorder.tools.GameData
 import com.arttseng.screenrecorder.tools.RetrofitFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import io.reactivex.Completable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -76,20 +75,11 @@ class SacnService : Service() {
     private fun scan() {
         val mockData = genTestData()
 
-//        Timer().schedule(timerTask {
-//            mockData?.let { processData(mockData) }
-//            //scanMatch()
-//        }, 1000, Const.ScanPeriod)
+        Timer().schedule(timerTask {
+            //mockData?.let { processData(mockData) }
+            scanMatch()
+        }, 1000, Const.ScanPeriod)
 
-        Completable.complete()
-            .delay(1000, TimeUnit.MILLISECONDS)
-            .repeat(Const.RecordingShift.toLong())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnComplete {
-                mockData?.let { processData(mockData) }
-                //scanMatch()
-            }
-            .subscribe()
     }
 
     private fun genTestData():List<GameData>? {
@@ -107,7 +97,7 @@ class SacnService : Service() {
             return
         }
 
-        GlobalScope.launch(Dispatchers.IO) {
+        MainScope().launch(Dispatchers.IO) {
             val webResponse = RetrofitFactory.WebAccess.API.getGameList().await()
             if (webResponse.isSuccessful) {
                 val data : List<GameData>? = webResponse.body()
