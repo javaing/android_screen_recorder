@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
         val intent = MyApplication.getData(Const.KEY_MEDIA_PROJECTION_INTENT) as Intent
         val projection = manager?.getMediaProjection(resultCode, intent)
         val recorder = MediaRecorder()
-        Tools.startRecord2(this, recorder, filename, projection)
+        Tools.startRecord(this, recorder, filename, projection)
 
         Handler().postDelayed({
             Tools.stopRecording(recorder, projection)

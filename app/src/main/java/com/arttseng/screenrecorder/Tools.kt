@@ -33,30 +33,23 @@ class Tools {
             manager = ctx.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
 
             projection = manager.getMediaProjection(resultCode, data)
-            setUpMediaRecorder(ctx, filename)
-            val metrics = ctx.getResources().getDisplayMetrics()
-            virtualDisplay = projection.createVirtualDisplay("ScreenRecording",
-                metrics.widthPixels, metrics.heightPixels, metrics.densityDpi, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                mMediaRecorder.getSurface(), null, null);
-
-            mMediaRecorder.start()
+            startRecord(ctx,mMediaRecorder, filename, projection)
             Log.e("TEST", "startRecord:" + currentTimeToMinute())
         }
 
-
-        fun startRecord2(ctx:Context, outterRecorder: MediaRecorder, filename: String, projection: MediaProjection) {
+        fun startRecord(ctx:Context, outterRecorder: MediaRecorder, filename: String, projection: MediaProjection) {
             setUpMediaRecorder(outterRecorder, ctx, filename)
-            val metrics = ctx.getResources().getDisplayMetrics()
+            val metrics = ctx.resources.displayMetrics
             virtualDisplay = projection.createVirtualDisplay("ScreenRecording",
                 metrics.widthPixels, metrics.heightPixels, metrics.densityDpi, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                outterRecorder.getSurface(), null, null);
+                outterRecorder.surface, null, null);
 
             outterRecorder.start()
             Log.e("TEST", "startRecord2:" + currentTimeToMinute())
         }
 
         private fun setUpMediaRecorder(outterRecorder: MediaRecorder,ctx: Context, filename: String) {
-            val metrics = ctx.getResources().getDisplayMetrics()
+            val metrics = ctx.resources.displayMetrics
             with(outterRecorder) {
                 setAudioSource(MediaRecorder.AudioSource.MIC)
                 setVideoSource(MediaRecorder.VideoSource.SURFACE)
@@ -75,10 +68,6 @@ class Tools {
             }
         }
 
-        private fun setUpMediaRecorder(ctx: Context, filename: String) {
-            setUpMediaRecorder(mMediaRecorder, ctx, filename)
-        }
-
         fun stopRecording(recorder: MediaRecorder, projection: MediaProjection) {
             isRecording = false
             recorder.setOnErrorListener(null)
@@ -93,7 +82,7 @@ class Tools {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-            projection?.stop()
+            projection.stop()
             Log.e("TEST","stopRecording done.")
         }
 
@@ -139,7 +128,7 @@ class Tools {
         fun getShiftTime(date:Date, shift:Int):Date {
             val cal = Calendar.getInstance() // creates calendar
             cal.time = date // sets calendar time/date
-            cal.add(Calendar.MINUTE, Const.RecordingShift.toInt()) // adds one hour
+            cal.add(Calendar.MINUTE, shift) // adds one hour
             return cal.time
         }
 
@@ -190,7 +179,7 @@ class Tools {
                 return false
             //Log.e("TEST", "it=" + it.id + "," + it.GameStart+ "," + it.GameEnd)
             val start = matchTimeToLong( it.GameStart)
-            var end = matchTimeToLong(it.GameEnd?:"2030-01-01T00:00:00Z")
+            val end = matchTimeToLong(it.GameEnd?:"2030-01-01T00:00:00Z")
             val current = currentTimeToLong()
             //Log.e("TEST", "result=" + (current in (start + 1) until end))
             return current in (start + 1) until end
