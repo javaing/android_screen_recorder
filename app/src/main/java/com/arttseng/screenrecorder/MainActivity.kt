@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity() {
 
         filename = Tools.getFilename(title)
         Log.e("TEST", "WebView path=" + filename)
+        Log.e("TEST", "WebView URL=" + intent.getStringExtra(Const.URL))
 
         val screenLock =
             (getSystemService(Context.POWER_SERVICE) as PowerManager).newWakeLock(

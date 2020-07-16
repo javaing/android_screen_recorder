@@ -124,7 +124,7 @@ class SacnService : Service() {
                 dataList.forEach {
                     if(Tools.isAfterStartBeforeEnd(it)) {
                         Tools.isRecording=true
-                        //updateStatusAPI(it.id, it.MobileNumber?:"0000")
+                        updateStatusAPI(it.id, it.MobileNumber?:"0000")
 
                         Timer().schedule(timerTask {
                             wakeupMain(it.zbUrl, Tools.getMatchTitle(it))
