@@ -19,6 +19,7 @@ import java.util.*
 class Tools {
     companion object {
         val solarDatePattern = "yyyy-MM-ddHH:mm:ss"
+        val solarDateFormat = SimpleDateFormat(solarDatePattern)
 
         lateinit var manager: MediaProjectionManager
         lateinit var mMediaRecorder: MediaRecorder
@@ -44,7 +45,7 @@ class Tools {
 
 
         fun startRecord2(ctx:Context, outterRecorder: MediaRecorder, filename: String, projection: MediaProjection) {
-            setUpMediaRecorder2(outterRecorder, ctx, filename)
+            setUpMediaRecorder(outterRecorder, ctx, filename)
             val metrics = ctx.getResources().getDisplayMetrics()
             virtualDisplay = projection.createVirtualDisplay("ScreenRecording",
                 metrics.widthPixels, metrics.heightPixels, metrics.densityDpi, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
@@ -54,40 +55,28 @@ class Tools {
             Log.e("TEST", "startRecord2:" + currentTimeToMinute())
         }
 
-        private fun setUpMediaRecorder2(outterRecorder: MediaRecorder,ctx: Context, filename: String) {
+        private fun setUpMediaRecorder(outterRecorder: MediaRecorder,ctx: Context, filename: String) {
             val metrics = ctx.getResources().getDisplayMetrics()
-            outterRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
-            outterRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE)
-            outterRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-            outterRecorder.setOutputFile(filename)
-            outterRecorder.setVideoEncodingBitRate(10000000)
-            outterRecorder.setVideoFrameRate(30)
-            outterRecorder.setVideoSize(metrics.widthPixels, metrics.heightPixels)
-            outterRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-            outterRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-            try {
-                outterRecorder.prepare()
-            } catch (e: IOException) {
-                e.printStackTrace()
+            with(outterRecorder) {
+                setAudioSource(MediaRecorder.AudioSource.MIC)
+                setVideoSource(MediaRecorder.VideoSource.SURFACE)
+                setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+                setOutputFile(filename)
+                setVideoEncodingBitRate(10000000)
+                setVideoFrameRate(30)
+                setVideoSize(metrics.widthPixels, metrics.heightPixels)
+                setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+                setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+                try {
+                    prepare()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
             }
         }
 
         private fun setUpMediaRecorder(ctx: Context, filename: String) {
-            val metrics = ctx.getResources().getDisplayMetrics()
-            mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
-            mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE)
-            mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-            mMediaRecorder.setOutputFile(filename)
-            mMediaRecorder.setVideoEncodingBitRate(10000000)
-            mMediaRecorder.setVideoFrameRate(30)
-            mMediaRecorder.setVideoSize(metrics.widthPixels, metrics.heightPixels)
-            mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-            mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-            try {
-                mMediaRecorder.prepare()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
+            setUpMediaRecorder(mMediaRecorder, ctx, filename)
         }
 
         fun stopRecording(recorder: MediaRecorder, projection: MediaProjection) {
@@ -113,7 +102,7 @@ class Tools {
         }
 
         private fun createPath() {
-            var pathFile = File(Const.SavePath)
+            val pathFile = File(Const.SavePath)
             if(!pathFile.exists()) {
                 val success = pathFile.mkdirs()
                 if (success) Log.e("TEST","Directory path was created successfully")
@@ -128,8 +117,7 @@ class Tools {
 
         fun convertLongToTime(time: Long): String {
             val date = Date(time)
-            val format = SimpleDateFormat(solarDatePattern)
-            return format.format(date)
+            return solarDateFormat.format(date)
         }
 
         fun currentTimeToLong(): Long {
@@ -141,13 +129,11 @@ class Tools {
         }
 
         fun convertDateToLong(date: String): Long {
-            val df = SimpleDateFormat(solarDatePattern)
-            return df.parse(date).time
+            return solarDateFormat.parse(date).time
         }
 
         fun convertDateToDate(date: String): Date {
-            val df = SimpleDateFormat(solarDatePattern)
-            return df.parse(date)
+            return solarDateFormat.parse(date)
         }
 
         fun getShiftTime(date:Date, shift:Int):Date {
@@ -211,21 +197,21 @@ class Tools {
         }
 
         fun matchTimeToLong(time: String):Long {
-            if(time == null || time.equals("null")) {
+            if(time.equals("null")) {
                 return 0
             }
             // "GameEnd":"2020-07-07T18:00:00Z",
-            val time = time.replace("T","").replace("Z","")
-            return convertDateToLong(time)
+            val timeFilter = time.replace("T","").replace("Z","")
+            return convertDateToLong(timeFilter)
         }
 
         fun matchTimeToDate(time: String):Date {
-            if(time == null || time.equals("null")) {
+            if(time.equals("null")) {
                 return Date()
             }
             // "GameEnd":"2020-07-07T18:00:00Z",
-            val time = time.replace("T","").replace("Z","")
-            return convertDateToDate(time)
+            val timeFilter = time.replace("T","").replace("Z","")
+            return convertDateToDate(timeFilter)
         }
     }
 }

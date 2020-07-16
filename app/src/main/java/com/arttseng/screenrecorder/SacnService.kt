@@ -76,8 +76,8 @@ class SacnService : Service() {
         val mockData = genTestData()
 
         Timer().schedule(timerTask {
-            //mockData?.let { processData(mockData) }
-            scanMatch()
+            mockData?.let { processData(mockData) }
+            //scanMatch()
         }, 1000, Const.ScanPeriod)
 
     }
