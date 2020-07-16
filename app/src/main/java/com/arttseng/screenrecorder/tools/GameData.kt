@@ -15,4 +15,15 @@ data class GameData (
     var Url : String?,
     var MobileNumber : String?=null,
     val Status : Int
-)
+) {
+    val zbUrl: String
+        get() = if (Url.isNullOrEmpty()) {
+            Const.BaseURL
+        } else {
+            if(Url!!.indexOf("http")<0)
+                Const.SMTV + Url!!
+            else
+                Url!!
+        }
+
+}

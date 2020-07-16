@@ -28,8 +28,8 @@ class SacnService : Service() {
             "      \"AnchorID\":45456,\n" +
             "      \"AnchorName\":\"測試員一號\",\n" +
             "      \"LeagueName\":\"法马利卡奥-朴迪莫伦斯\",\n" +
-            "      \"GameStart\":\"2020-07-15T09:20:00Z\",\n" +
-            "    \"GameEnd\":\"2020-07-15T18:00:00Z\",\n" +
+            "      \"GameStart\":\"2020-07-16T09:20:00Z\",\n" +
+            "    \"GameEnd\":\"2020-07-18T18:00:00Z\",\n" +
             "    \"Url\":\"https://smzb.io/room/70\",\n" +
             "      \"Status\":\"0\"\n" +
             "   },\n" +
@@ -76,8 +76,8 @@ class SacnService : Service() {
         val mockData = genTestData()
 
         Timer().schedule(timerTask {
-            mockData?.let { processData(mockData) }
-            //scanMatch()
+            //mockData?.let { processData(mockData) }
+            scanMatch()
         }, 1000, Const.ScanPeriod)
 
     }
@@ -124,11 +124,11 @@ class SacnService : Service() {
                 dataList.forEach {
                     if(Tools.isAfterStartBeforeEnd(it)) {
                         Tools.isRecording=true
-                        updateStatusAPI(it.id, it.MobileNumber?:"0000")
+                        //updateStatusAPI(it.id, it.MobileNumber?:"0000")
 
                         Timer().schedule(timerTask {
-                            wakeupMain(it.Url?:Const.SMTV, Tools.getMatchTitle(it))
-                            //captureScreen(it.Url?:Const.SMTV, Tools.getMatchTitle(it))
+                            wakeupMain(it.zbUrl, Tools.getMatchTitle(it))
+                            //captureScreen(it.zbUrl, Tools.getMatchTitle(it))
                         }, shiftDate(it))
                         return
                     }
@@ -195,10 +195,7 @@ class SacnService : Service() {
 
         val openURL = Intent(Intent.ACTION_VIEW)
         openURL.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        if(url.indexOf("http")<0)
-            openURL.data = Uri.parse(Const.SMTV + url)
-        else
-            openURL.data = Uri.parse(url)
+        openURL.data = Uri.parse(url)
         startActivity(openURL)
     }
 

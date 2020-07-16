@@ -17,6 +17,6 @@ class Const {
 
         const val MatchAPI = "GetGameList"
         const val UpdateStatusAPI = "UpdateStatus"
-        const val SMTV = "https://smtv.io"
+        const val SMTV = "https://smzb.cn"
     }
 }

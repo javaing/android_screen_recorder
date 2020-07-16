@@ -58,36 +58,6 @@ class MainActivity : AppCompatActivity() {
         requestRecording()
     }
 
-
-//    fun turnOnStrictMode() {
-//        if (BuildConfig.DEBUG) {
-//            StrictMode.setThreadPolicy(
-//                StrictMode.ThreadPolicy.Builder()
-//                    .detectAll()
-//                    .penaltyLog()
-//                    .penaltyDeath().build())
-//            StrictMode.setVmPolicy(
-//                StrictMode.VmPolicy.Builder()
-//                    .detectAll()
-//                    .penaltyLog()
-//                    .penaltyDeath().build())
-//        }
-//    }
-//    fun permitDiskReads(func: () -> Any) : Any {
-//        if (BuildConfig.DEBUG) {
-//            val oldThreadPolicy = StrictMode.getThreadPolicy()
-//            StrictMode.setThreadPolicy(
-//                StrictMode.ThreadPolicy.Builder(oldThreadPolicy)
-//                    .permitDiskReads().build())
-//            val anyValue = func()
-//            StrictMode.setThreadPolicy(oldThreadPolicy)
-//
-//            return anyValue
-//        } else {
-//            return func()
-//        }
-//    }
-
     private fun requestRecording() {
         manager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         if (MyApplication.getData(Const.KEY_MEDIA_PROJECTION_INTENT)==null) {
