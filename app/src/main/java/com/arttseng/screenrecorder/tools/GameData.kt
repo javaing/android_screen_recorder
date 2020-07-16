@@ -21,7 +21,7 @@ data class GameData (
             Const.BaseURL
         } else {
             if(Url!!.indexOf("http")<0)
-                Const.SMTV + Url!!
+                Const.SMZB + Url!!
             else
                 Url!!
         }
