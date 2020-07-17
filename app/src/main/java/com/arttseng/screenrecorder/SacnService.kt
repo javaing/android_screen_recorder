@@ -22,38 +22,40 @@ import kotlin.concurrent.timerTask
 class SacnService : Service() {
     //val gameTimeList = ArrayList<String>()
 
-    val testStr = "[\n" +
-            "   {\n" +
-            "      \"id\":1,\n" +
-            "      \"AnchorID\":45456,\n" +
-            "      \"AnchorName\":\"測試員一號\",\n" +
-            "      \"LeagueName\":\"法马利卡奥-朴迪莫伦斯\",\n" +
-            "      \"GameStart\":\"2020-07-16T09:20:00Z\",\n" +
-            "    \"GameEnd\":\"2020-07-18T18:00:00Z\",\n" +
-            "    \"Url\":\"https://smzb.io/room/70\",\n" +
-            "      \"Status\":\"0\"\n" +
-            "   },\n" +
-            "   {\n" +
-            "      \"id\":2,\n" +
-            "      \"AnchorID\":45456,\n" +
-            "      \"AnchorName\":\"測試員二號\",\n" +
-            "      \"LeagueName\":\"法马利卡奥-朴迪莫伦斯\",\n" +
-            "      \"GameStart\":\"2020-07-14T11:50:00Z\",\n" +
-            "    \"GameEnd\":\"2020-07-15T18:00:00Z\",\n" +
-            "    \"Url\":\"https://smzb.io/room/55\",\n" +
-            "      \"Status\":\"0\"\n" +
-            "   },\n" +
-            "   {\n" +
-            "      \"id\":3,\n" +
-            "      \"AnchorID\":45456,\n" +
-            "      \"AnchorName\":\"測試員三號\",\n" +
-            "      \"LeagueName\":\"法马利卡奥-朴迪莫伦斯\",\n" +
-            "      \"GameStart\":\"2020-07-14T18:30:00Z\",\n" +
-            "    \"GameEnd\":\"2020-07-15T12:30:00Z\",\n" +
-            "    \"Url\":\"https://smzb.io/room/356\",\n" +
-            "      \"Status\":\"0\"\n" +
-            "   }\n" +
-            "]"
+    val testStr = """
+        [
+           {
+              "id":1,
+              "AnchorID":45456,
+              "AnchorName":"測試員一號",
+              "LeagueName":"法马利卡奥-朴迪莫伦斯",
+              "GameStart":"2020-07-07T18:00:00Z",
+            "GameEnd":"2020-07-18T18:00:00Z",
+            "Url":"https://smzb.cn/room/299/649658?channel_id=2182317",
+              "Status":"0"
+           },
+           {
+              "id":2,
+              "AnchorID":45456,
+              "AnchorName":"測試員二號",
+              "LeagueName":"法马利卡奥-朴迪莫伦斯",
+              "GameStart":"2020-07-07T18:00:00Z",
+            "GameEnd":"2020-07-07T18:00:00Z",
+            "Url":"https://smzb.io/room/55",
+              "Status":"0"
+           },
+           {
+              "id":3,
+              "AnchorID":45456,
+              "AnchorName":"測試員三號",
+              "LeagueName":"法马利卡奥-朴迪莫伦斯",
+              "GameStart":"2020-07-07T18:00:00Z",
+            "GameEnd":"2020-07-07T18:00:00Z",
+            "Url":"https://smzb.io/room/356",
+              "Status":"0"
+           }
+        ]
+    """.trimIndent()
 
     override fun onBind(intent: Intent): IBinder? {
         throw UnsupportedOperationException("Not yet implemented")

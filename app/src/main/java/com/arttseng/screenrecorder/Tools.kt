@@ -1,5 +1,6 @@
 package com.arttseng.screenrecorder
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.hardware.display.DisplayManager
@@ -8,6 +9,7 @@ import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Build
+import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.Toast
 import com.arttseng.screenrecorder.tools.GameData
@@ -15,6 +17,7 @@ import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class Tools {
     companion object {
@@ -201,6 +204,13 @@ class Tools {
             // "GameEnd":"2020-07-07T18:00:00Z",
             val timeFilter = time.replace("T","").replace("Z","")
             return convertDateToDate(timeFilter)
+        }
+
+        fun dpToPx(ctx: Context, dp:Int): Float {
+            val metrics = DisplayMetrics()
+            (ctx as Activity).getWindowManager().getDefaultDisplay().getMetrics(metrics)
+            val logicalDensity: Float = metrics.density
+            return Math.ceil((dp * logicalDensity).toDouble()).toFloat()
         }
     }
 }

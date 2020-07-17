@@ -5,10 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.media.MediaRecorder
-import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
-import android.os.*
+import android.os.Bundle
+import android.os.Handler
+import android.os.PowerManager
+import android.os.SystemClock
 import android.util.Log
+import android.view.MotionEvent
+import android.view.View
 import android.webkit.WebSettings
 import androidx.appcompat.app.AppCompatActivity
 import com.arttseng.screenrecorder.Tools.Companion.toast
@@ -20,13 +24,12 @@ class MainActivity : AppCompatActivity() {
     val REQUEST_MEDIA_PROJECTION = 1000
     lateinit var filename: String
 
+
+
+
     @SuppressLint("InvalidWakeLockTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        turnOnStrictMode()
-//        permitDiskReads{
-//            super.onCreate(savedInstanceState)
-//        }
 
         getWindow().setFormat(PixelFormat.TRANSLUCENT)
         setContentView(R.layout.activity_main)
@@ -43,11 +46,19 @@ class MainActivity : AppCompatActivity() {
         webSettings.setAppCacheEnabled(false)
         webSettings.cacheMode = WebSettings.LOAD_NO_CACHE
 
+        Handler().postDelayed({
+            Log.e("TEST", "WebView on Down")
+            setSimulateClick(webView,
+                Tools.dpToPx(this, 35),
+                Tools.dpToPx(this, 60))
+        },6000)
+
+
         webView.loadUrl(intent.getStringExtra(Const.URL))
         val title = intent.getStringExtra(Const.Title).replace("-","_").replace(" ", "")
 
         filename = Tools.getFilename(title)
-        Log.e("TEST", "WebView path=" + filename)
+        //Log.e("TEST", "WebView path=" + filename)
         Log.e("TEST", "WebView URL=" + intent.getStringExtra(Const.URL))
 
         val screenLock =
@@ -57,6 +68,27 @@ class MainActivity : AppCompatActivity() {
         screenLock.acquire()
 
         requestRecording()
+    }
+
+    private fun setSimulateClick(
+        view: View,
+        x: Float,
+        y: Float
+    ) {
+        var downTime = SystemClock.uptimeMillis()
+        val downEvent = MotionEvent.obtain(
+            downTime, downTime,
+            MotionEvent.ACTION_DOWN, x, y, 0
+        )
+        downTime += 1000
+        val upEvent = MotionEvent.obtain(
+            downTime, downTime,
+            MotionEvent.ACTION_UP, x, y, 0
+        )
+        view.onTouchEvent(downEvent)
+        view.onTouchEvent(upEvent)
+        downEvent.recycle()
+        upEvent.recycle()
     }
 
     private fun requestRecording() {
