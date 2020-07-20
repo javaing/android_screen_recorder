@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
             setSimulateClick(webView,
                 Tools.dpToPx(this, 35),
                 Tools.dpToPx(this, 60))
-        },6000)
+        },9000)
 
 
         webView.loadUrl(intent.getStringExtra(Const.URL))
