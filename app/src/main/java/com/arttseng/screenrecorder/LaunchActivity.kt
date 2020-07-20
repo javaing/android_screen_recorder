@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.media.projection.MediaProjectionManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -111,7 +112,10 @@ class LaunchActivity : AppCompatActivity() {
                     intent.putExtra("code", resultCode);
                     intent.putExtra("data", dataIntent);
                     startService(intent)
-                    moveTaskToBack(true)
+                    if(!Build.MANUFACTURER.contains("Xiaomi")) {
+                        moveTaskToBack(true)
+                    }
+
 
                 } else {
                     toast("背景已执行")
