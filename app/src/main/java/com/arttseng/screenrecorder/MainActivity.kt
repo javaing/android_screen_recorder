@@ -6,14 +6,12 @@ import android.content.Intent
 import android.graphics.PixelFormat
 import android.media.MediaRecorder
 import android.media.projection.MediaProjectionManager
-import android.os.Bundle
-import android.os.Handler
-import android.os.PowerManager
-import android.os.SystemClock
+import android.os.*
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.webkit.WebSettings
+import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import com.arttseng.screenrecorder.Tools.Companion.toast
 import kotlinx.android.synthetic.main.activity_main.*
@@ -23,8 +21,6 @@ class MainActivity : AppCompatActivity() {
 
     val REQUEST_MEDIA_PROJECTION = 1000
     lateinit var filename: String
-
-
 
 
     @SuppressLint("InvalidWakeLockTag")
@@ -82,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         )
         downTime += 1000
         val upEvent = MotionEvent.obtain(
-            downTime, downTime,
+            downTime, downTime+100,
             MotionEvent.ACTION_UP, x, y, 0
         )
         view.onTouchEvent(downEvent)
@@ -118,7 +114,9 @@ class MainActivity : AppCompatActivity() {
             toast("录影结束")
             Log.e("TEST", "录影结束" )
             Log.e("TEST", "isRecording="+Tools.isRecording)
-            moveTaskToBack(true)
+            if(!Build.MANUFACTURER.contains("Xiaomi")) {
+                moveTaskToBack(true)
+            }
         },Const.RecordingLength)
     }
 
