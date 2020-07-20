@@ -54,7 +54,7 @@ class Tools {
         private fun setUpMediaRecorder(outterRecorder: MediaRecorder,ctx: Context, filename: String) {
             val metrics = ctx.resources.displayMetrics
             with(outterRecorder) {
-                setAudioSource(MediaRecorder.AudioSource.MIC)
+                //setAudioSource(MediaRecorder.AudioSource.MIC)
                 setVideoSource(MediaRecorder.VideoSource.SURFACE)
                 setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
                 setOutputFile(filename)
@@ -62,7 +62,7 @@ class Tools {
                 setVideoFrameRate(30)
                 setVideoSize(metrics.widthPixels, metrics.heightPixels)
                 setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-                setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+                //setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
                 try {
                     prepare()
                 } catch (e: IOException) {

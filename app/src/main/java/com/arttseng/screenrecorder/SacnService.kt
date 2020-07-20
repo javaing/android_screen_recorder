@@ -29,9 +29,9 @@ class SacnService : Service() {
               "AnchorID":45456,
               "AnchorName":"測試員一號",
               "LeagueName":"法马利卡奥-朴迪莫伦斯",
-              "GameStart":"2020-07-07T18:00:00Z",
-            "GameEnd":"2020-07-18T18:00:00Z",
-            "Url":"https://smzb.cn/room/299/649658?channel_id=2182317",
+              "GameStart":"2020-07-20T09:00:00Z",
+            "GameEnd":"2020-07-22T18:00:00Z",
+            "Url":"https://smzb.cn/room/302?channel_id=2190498",
               "Status":"0"
            },
            {
