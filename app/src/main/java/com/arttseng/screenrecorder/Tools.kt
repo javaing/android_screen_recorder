@@ -79,41 +79,20 @@ class Tools {
         }
 
         fun stopRecording(recorder: MediaRecorder, projection: MediaProjection) {
-//            isRecording = false
-//            recorder.setOnErrorListener(null)
-//            recorder.setOnInfoListener(null)
-//            recorder.setPreviewDisplay(null)
-//            try {
-//                recorder.stop()
-//            } catch (e: IllegalStateException) {
-//                e.printStackTrace()
-//            } catch (e: RuntimeException) {
-//                e.printStackTrace()
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
-//            projection.stop()
-
-            if (isRecording) {
-                isRecording = false
-                try {
-                    recorder?.apply {
-                        setOnErrorListener(null)
-                        setOnInfoListener(null)
-                        setPreviewDisplay(null)
-                        stop()
-                        Log.d("TEST", "stop success")
-                    }
-                } catch (e: Exception) {
-                    Log.e("TEST", "stopRecorder() error！${e.message}")
-                } finally {
-                    recorder?.reset()
-                    //virtualDisplay?.release()
-                    projection?.stop()
-                }
+            isRecording = false
+            recorder.setOnErrorListener(null)
+            recorder.setOnInfoListener(null)
+            recorder.setPreviewDisplay(null)
+            try {
+                recorder.stop()
+            } catch (e: IllegalStateException) {
+                e.printStackTrace()
+            } catch (e: RuntimeException) {
+                e.printStackTrace()
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-            //sourec:https://juejin.im/post/5d121daee51d455070226fc9
-
+            projection.stop()
 
             Log.e("TEST","stopRecording done.")
         }
