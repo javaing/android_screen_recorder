@@ -31,7 +31,7 @@ class SacnService : Service() {
               "LeagueName":"法马利卡奥-朴迪莫伦斯",
               "GameStart":"2020-07-20T09:00:00Z",
             "GameEnd":"2020-07-22T18:00:00Z",
-            "Url":"https://smzb.cn/room/18292/694285?channel_id=2195202",
+            "Url":"https://smzb.cn/room/18293?channel_id=2195203",
               "Status":"0"
            },
            {

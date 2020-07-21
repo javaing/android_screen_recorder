@@ -119,9 +119,9 @@ class MainActivity : AppCompatActivity() {
             toast("录影结束")
             Log.e("TEST", "录影结束" )
             Log.e("TEST", "isRecording="+Tools.isRecording)
-            if(!Build.MANUFACTURER.contains("Xiaomi")) {
+            //if(!Tools.isXiaomi()) {
                 moveTaskToBack(true)
-            }
+            //}
         },Const.RecordingLength)
     }
 

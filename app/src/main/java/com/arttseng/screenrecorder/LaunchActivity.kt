@@ -112,9 +112,9 @@ class LaunchActivity : AppCompatActivity() {
                     intent.putExtra("code", resultCode);
                     intent.putExtra("data", dataIntent);
                     startService(intent)
-                    if(!Build.MANUFACTURER.contains("Xiaomi")) {
+                    //if(!Tools.isXiaomi()) {
                         moveTaskToBack(true)
-                    }
+                    //}
 
 
                 } else {
