@@ -106,12 +106,7 @@ class MainActivity : AppCompatActivity() {
         val intent = MyApplication.getData(Const.KEY_MEDIA_PROJECTION_INTENT) as Intent
         val projection = manager?.getMediaProjection(resultCode, intent)
         val recorder = MediaRecorder()
-        if(Tools.isXiaomi()) {
-            Tools.startRecord_xiaomi(this, recorder, filename, projection)
-        } else {
-            Tools.startRecord(this, recorder, filename, projection)
-        }
-
+        Tools.startRecord(this, filename, recorder, projection)
 
         Handler().postDelayed({
             Tools.stopRecording(recorder, projection)
@@ -119,9 +114,8 @@ class MainActivity : AppCompatActivity() {
             toast("录影结束")
             Log.e("TEST", "录影结束" )
             Log.e("TEST", "isRecording="+Tools.isRecording)
-            //if(!Tools.isXiaomi()) {
+            if(!Tools.isXiaomi())
                 moveTaskToBack(true)
-            //}
         },Const.RecordingLength)
     }
 

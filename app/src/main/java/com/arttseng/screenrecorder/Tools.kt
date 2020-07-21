@@ -40,79 +40,81 @@ class Tools {
             manager = ctx.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
 
             projection = manager.getMediaProjection(resultCode, data)
-            startRecord(ctx,mMediaRecorder, filename, projection)
-            Log.e("TEST", "startRecord:" + currentTimeToMinute())
-        }
-
-        fun startRecord(ctx:Context, outterRecorder: MediaRecorder, filename: String, projection: MediaProjection) {
-            val metrics = ctx.resources.displayMetrics
-            with(outterRecorder) {
-                setVideoSource(MediaRecorder.VideoSource.SURFACE)
-                setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-                setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-                setOutputFile(filename)
-                setVideoSize(metrics.widthPixels, metrics.heightPixels)
-                setVideoEncodingBitRate(10000000)
-                setVideoFrameRate(30)
-                try {
-                    prepare()
-                    virtualDisplay = projection.createVirtualDisplay("ScreenRecording",
-                        metrics.widthPixels, metrics.heightPixels, metrics.densityDpi, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                        outterRecorder.surface, null, null);
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-            }
-
-            outterRecorder.start()
+            startRecord(ctx, filename, mMediaRecorder, projection)
             Log.e("TEST", "startRecord:" + currentTimeToMinute())
         }
 
         //小米会死在setVideoSize(width, height)
         //开始录制时有media server died的error
         //先以写死长宽的方式解决
-        fun startRecord_xiaomi(ctx:Context, outterRecorder: MediaRecorder, filename: String, projection: MediaProjection) {
-            val metrics: DisplayMetrics = ctx.getResources().getDisplayMetrics()
-            val width = 1080
-            val height = 1920
+        fun startRecord(ctx:Context, filename: String, outterRecorder: MediaRecorder, projection: MediaProjection) {
+            val metrics = ctx.resources.displayMetrics
+            var width = metrics.widthPixels
+            var height = metrics.heightPixels
+            if(isXiaomi()) {
+                width = 1080
+                height = 1920
+            }
             outterRecorder?.apply {
+                setAudioSource(MediaRecorder.AudioSource.MIC)
                 setVideoSource(MediaRecorder.VideoSource.SURFACE)
                 setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
                 setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+                setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
                 setOutputFile(filename)
                 setVideoSize(width, height)
                 setVideoEncodingBitRate(10000000)
                 setVideoFrameRate(30)
                 try {
                     prepare()
-                    Tools.virtualDisplay = projection.createVirtualDisplay("game",
+                    virtualDisplay = projection.createVirtualDisplay("ScreenRecording",
                         width, height, metrics.densityDpi, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                        surface, null, null)
+                        outterRecorder.surface, null, null);
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
+                start()
             }
-            outterRecorder.start()
-            Log.e("TEST", "startRecord xiaomi:" + Tools.currentTimeToMinute())
+            Log.e("TEST", "startRecord:" + currentTimeToMinute())
         }
 
-
-
         fun stopRecording(recorder: MediaRecorder, projection: MediaProjection) {
-            isRecording = false
-            recorder.setOnErrorListener(null)
-            recorder.setOnInfoListener(null)
-            recorder.setPreviewDisplay(null)
-            try {
-                recorder.stop()
-            } catch (e: IllegalStateException) {
-                e.printStackTrace()
-            } catch (e: RuntimeException) {
-                e.printStackTrace()
-            } catch (e: Exception) {
-                e.printStackTrace()
+//            isRecording = false
+//            recorder.setOnErrorListener(null)
+//            recorder.setOnInfoListener(null)
+//            recorder.setPreviewDisplay(null)
+//            try {
+//                recorder.stop()
+//            } catch (e: IllegalStateException) {
+//                e.printStackTrace()
+//            } catch (e: RuntimeException) {
+//                e.printStackTrace()
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//            projection.stop()
+
+            if (isRecording) {
+                isRecording = false
+                try {
+                    recorder?.apply {
+                        setOnErrorListener(null)
+                        setOnInfoListener(null)
+                        setPreviewDisplay(null)
+                        stop()
+                        Log.d("TEST", "stop success")
+                    }
+                } catch (e: Exception) {
+                    Log.e("TEST", "stopRecorder() error！${e.message}")
+                } finally {
+                    recorder?.reset()
+                    //virtualDisplay?.release()
+                    projection?.stop()
+                }
             }
-            projection.stop()
+            //sourec:https://juejin.im/post/5d121daee51d455070226fc9
+
+
             Log.e("TEST","stopRecording done.")
         }
 

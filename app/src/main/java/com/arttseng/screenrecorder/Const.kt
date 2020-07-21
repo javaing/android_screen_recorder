@@ -17,6 +17,6 @@ class Const {
 
         const val MatchAPI = "GetGameList"
         const val UpdateStatusAPI = "UpdateStatus"
-        const val SMZB = "https://smzb.cn"
+        const val SMZB = "https://smzb.cn/"
     }
 }
