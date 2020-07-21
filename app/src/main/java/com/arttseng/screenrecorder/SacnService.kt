@@ -31,7 +31,7 @@ class SacnService : Service() {
               "LeagueName":"法马利卡奥-朴迪莫伦斯",
               "GameStart":"2020-07-20T09:00:00Z",
             "GameEnd":"2020-07-22T18:00:00Z",
-            "Url":"https://smzb.cn/room/302?channel_id=2190498",
+            "Url":"https://smzb.cn/room/18292/694285?channel_id=2195202",
               "Status":"0"
            },
            {
@@ -78,8 +78,8 @@ class SacnService : Service() {
         val mockData = genTestData()
 
         Timer().schedule(timerTask {
-            //mockData?.let { processData(mockData) }
-            scanMatch()
+            mockData?.let { processData(mockData) }
+            //scanMatch()
         }, 1000, Const.ScanPeriod)
 
     }

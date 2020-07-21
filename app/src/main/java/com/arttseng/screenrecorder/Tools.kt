@@ -30,6 +30,10 @@ class Tools {
         lateinit var virtualDisplay: VirtualDisplay
         var isRecording  = false
 
+        fun isXiaomi():Boolean {
+            return Build.MANUFACTURER.contains("Xiaomi")
+        }
+
         fun startRecord(ctx:Context, resultCode: Int, data: Intent, filename: String) {
             isRecording = true
             mMediaRecorder = MediaRecorder()
@@ -41,35 +45,58 @@ class Tools {
         }
 
         fun startRecord(ctx:Context, outterRecorder: MediaRecorder, filename: String, projection: MediaProjection) {
-            setUpMediaRecorder(outterRecorder, ctx, filename)
-            val metrics = ctx.resources.displayMetrics
-            virtualDisplay = projection.createVirtualDisplay("ScreenRecording",
-                metrics.widthPixels, metrics.heightPixels, metrics.densityDpi, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                outterRecorder.surface, null, null);
-
-            outterRecorder.start()
-            Log.e("TEST", "startRecord2:" + currentTimeToMinute())
-        }
-
-        private fun setUpMediaRecorder(outterRecorder: MediaRecorder,ctx: Context, filename: String) {
             val metrics = ctx.resources.displayMetrics
             with(outterRecorder) {
-                //setAudioSource(MediaRecorder.AudioSource.MIC)
                 setVideoSource(MediaRecorder.VideoSource.SURFACE)
                 setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+                setVideoEncoder(MediaRecorder.VideoEncoder.H264)
                 setOutputFile(filename)
+                setVideoSize(metrics.widthPixels, metrics.heightPixels)
                 setVideoEncodingBitRate(10000000)
                 setVideoFrameRate(30)
-                setVideoSize(metrics.widthPixels, metrics.heightPixels)
-                setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-                //setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
                 try {
                     prepare()
+                    virtualDisplay = projection.createVirtualDisplay("ScreenRecording",
+                        metrics.widthPixels, metrics.heightPixels, metrics.densityDpi, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                        outterRecorder.surface, null, null);
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
             }
+
+            outterRecorder.start()
+            Log.e("TEST", "startRecord:" + currentTimeToMinute())
         }
+
+        //小米会死在setVideoSize(width, height)
+        //开始录制时有media server died的error
+        //先以写死长宽的方式解决
+        fun startRecord_xiaomi(ctx:Context, outterRecorder: MediaRecorder, filename: String, projection: MediaProjection) {
+            val metrics: DisplayMetrics = ctx.getResources().getDisplayMetrics()
+            val width = 1080
+            val height = 1920
+            outterRecorder?.apply {
+                setVideoSource(MediaRecorder.VideoSource.SURFACE)
+                setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+                setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+                setOutputFile(filename)
+                setVideoSize(width, height)
+                setVideoEncodingBitRate(10000000)
+                setVideoFrameRate(30)
+                try {
+                    prepare()
+                    Tools.virtualDisplay = projection.createVirtualDisplay("game",
+                        width, height, metrics.densityDpi, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                        surface, null, null)
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            outterRecorder.start()
+            Log.e("TEST", "startRecord xiaomi:" + Tools.currentTimeToMinute())
+        }
+
+
 
         fun stopRecording(recorder: MediaRecorder, projection: MediaProjection) {
             isRecording = false
