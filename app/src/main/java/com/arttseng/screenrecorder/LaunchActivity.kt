@@ -70,7 +70,7 @@ class LaunchActivity : AppCompatActivity() {
         if (permission != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
                 arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    android.Manifest.permission.RECORD_AUDIO,
+                    //android.Manifest.permission.RECORD_AUDIO,
                     android.Manifest.permission.WAKE_LOCK),
                 REQUEST_PERMISSION)
         } else {

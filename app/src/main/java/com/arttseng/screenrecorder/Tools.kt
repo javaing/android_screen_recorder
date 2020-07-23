@@ -56,15 +56,15 @@ class Tools {
                 height = 1920
             }
             outterRecorder?.apply {
-                setAudioSource(MediaRecorder.AudioSource.MIC)
+                //setAudioSource(MediaRecorder.AudioSource.MIC)
                 setVideoSource(MediaRecorder.VideoSource.SURFACE)
                 setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
                 setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-                setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+                //setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
                 setOutputFile(filename)
                 setVideoSize(width, height)
                 setVideoEncodingBitRate(10000000)
-                setVideoFrameRate(30)
+                setVideoFrameRate(15)
                 try {
                     prepare()
                     virtualDisplay = projection.createVirtualDisplay("ScreenRecording",
